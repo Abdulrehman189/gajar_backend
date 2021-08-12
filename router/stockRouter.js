@@ -49,21 +49,14 @@ router.delete('/:id', async (req, res) => {
 
 // ===================UPDATE=====================
 router.patch('/:id', async (req, res) => {
-    console.log(req.body)
-    try {
-        const stocks = await Stock.findById(req.params.id)
-        stocks.party_name = req.body.party_name,
-            stocks.opening_balance = req.body.opening_balance,
-           { "$push" :{ "table" :{
-                name: req.body.name,
-                email: req.body.email,
-                phone: req.body.phone
-            }}}
-        const a1 = await stocks.save()
-        res.json(a1)
-    } catch (err) {
-        res.send('Error' + err)
-    }
+    const { party_name, opening_balance, table } = req.body;
+    const stocks = await Stock.findById(req.params.id);
+    
+    stocks.party_name = party_name;
+    stocks.opening_balance = opening_balance
+    stocks.table = table
+    const updatedStock = await stocks.save();
+    return res.json(updatedStock).status(200);
 });
 
 // stock.update(
@@ -74,28 +67,10 @@ router.patch('/:id', async (req, res) => {
 
 // =============ADD================
 router.post('/', async (req, res) => {
-    console.log(req.body);
-    const pData = new Stock({
-        party_name: req.body.party_name,
-        opening_balance: req.body.opening_balance,
-        table :[{
-            name: req.body.name,
-            email: req.body.email,
-            phone: req.body.phone
-        }]
-        // phone: req.body.phone,
-        // work: req.body.work,
-        // password: req.body.password,
-        // balance: req.body.balance,
-    })
-
-    try {
-        const a1 = await pData.save()
-        res.json(a1)
-        console.log(a1);
-    } catch (err) {
-        res.send('Error')
-    }
+    
+    const stockData = await Stock.create(req.body)
+    return res.json(stockData).status(200);
+    
 })
 
 
